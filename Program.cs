@@ -10,6 +10,15 @@ class Program
 
     static void Print(WeatherResponse wr)
     {
+        Console.WriteLine($"Temperature: {wr.current.temperature_2m} {wr.current_units.temperature_2m}");
+        Console.WriteLine($"Relative humidity: {wr.current.relative_humidity_2m} {wr.current_units.relative_humidity_2m}");
+        Console.WriteLine($"Wind speed: {wr.current.wind_speed_10m} {wr.current_units.wind_speed_10m}");
+        Console.WriteLine($"Wind direction: {wr.current.wind_direction_10m} {wr.current_units.wind_direction_10m}");
+        if (wr.current.precipitation > 0)
+        {
+            Console.WriteLine($"Precipitation: {wr.current.precipitation} {wr.current_units.precipitation}");
+            Console.WriteLine($"Rain: {wr.current.rain} {wr.current_units.rain}");
+        }
         
     }
     static void Main(string[] args)
@@ -47,6 +56,6 @@ class Program
             .Replace("{lat}", location.Latitude.ToString())
             .Replace("{lon}", location.Longitude.ToString());
         WeatherResponse wr = Http.GetFromJsonAsync<WeatherResponse>(getweatherurl).Result;
-        ;
+        Print(wr);
     }
 }
