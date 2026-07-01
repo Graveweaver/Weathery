@@ -5,10 +5,18 @@
         <TargetFramework>net10.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
+        <PackageId>weathery</PackageId>
+        <ToolCommandName>weathery</ToolCommandName>
+        <PackAsTool>true</PackAsTool>
+        <Version>1.0.0</Version>
+        <Authors>Graveweaver</Authors>
+        <Description>Pretty terminal weather from the Open-Meteo API</Description>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
     </PropertyGroup>
 
     <ItemGroup>
       <PackageReference Include="System.CommandLine" Version="2.0.9" />
+      <None Include="README.md" Pack="true" PackagePath="/" />
     </ItemGroup>
 
 </Project>
