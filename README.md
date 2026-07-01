@@ -7,7 +7,7 @@ $ weathery -city budapest
 
     \   /     Temperature: 28°C (feels like 30°C)
      .-.
-  ― (   ) ―  Humidity: 42%
+  ― (   ) ―   Humidity: 42%
      `-'
     /   \     Wind: 32km/h ↙ (SW)
 ```
