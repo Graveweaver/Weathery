@@ -52,10 +52,16 @@ class Program
         }
 
         getweatherurl =
-            "https://api.open-meteo.com/v1/forecast?latitude={lat}&longitude={lon}&current=precipitation,temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m,wind_direction_10m,rain"
+            "https://api.open-meteo.com/v1/forecast?latitude={lat}&longitude={lon}&hourly=temperature_2m&current=weather_code,apparent_temperature,rain,precipitation,temperature_2m,relative_humidity_2m,wind_speed_10m,wind_direction_10m,is_day,showers,snowfall,cloud_cover,pressure_msl,surface_pressure,wind_gusts_10m"
             .Replace("{lat}", location.Latitude.ToString())
             .Replace("{lon}", location.Longitude.ToString());
-        WeatherResponse wr = Http.GetFromJsonAsync<WeatherResponse>(getweatherurl).Result;
+        
+        WeatherResponse? wr = Http.GetFromJsonAsync<WeatherResponse>(getweatherurl).Result;
+        if(wr is null)
+        {
+            Console.WriteLine("Error getting weather data");
+            return;
+        }
         Print(wr);
     }
 }
