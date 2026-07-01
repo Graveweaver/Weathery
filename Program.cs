@@ -10,30 +10,76 @@ class Program
 
     static void Print(WeatherResponse wr)
     {
-        Console.WriteLine($"Temperature: {wr.current.temperature_2m} {wr.current_units.temperature_2m}");
-        Console.WriteLine($"Relative humidity: {wr.current.relative_humidity_2m} {wr.current_units.relative_humidity_2m}");
-        Console.WriteLine($"Wind speed: {wr.current.wind_speed_10m} {wr.current_units.wind_speed_10m}");
-        Console.WriteLine($"Wind direction: {GetWindArrow(wr.current.wind_direction_10m)}");
+        var lines = AsciiIcons.GetIcon(wr.current.weather_code);
+        var stats = new List<string>
+        {
+            $"Temperature: {ColorizeTemperature(wr.current.temperature_2m)} {wr.current_units.temperature_2m} (feels like {ColorizeTemperature(wr.current.apparent_temperature)} {wr.current_units.apparent_temperature})",
+            $"Humidity: \u001b[0;96m{wr.current.relative_humidity_2m} {wr.current_units.relative_humidity_2m}\u001b[0m",
+            $"Wind: {ColorizeWindSpeed(wr.current.wind_speed_10m)} {wr.current_units.wind_speed_10m} {GetWindArrow(wr.current.wind_direction_10m)}"
+        };
         if (wr.current.precipitation > 0)
         {
-            Console.WriteLine($"Precipitation: {wr.current.precipitation} {wr.current_units.precipitation}");
-            Console.WriteLine($"Rain: {wr.current.rain} {wr.current_units.rain}");
+            stats.Add($"Precipitation: {wr.current.precipitation} {wr.current_units.precipitation}");
+            stats.Add($"Rain: {wr.current.rain} {wr.current_units.rain}");
         }
         
-    }
-    static string GetWindArrow(int windDirection)
-    {
-        return windDirection switch
+        // just eyeballing what looks good
+        int leftWidth = 20;
+        int rowCount = Math.Max(lines.Length, stats.Count);
+        int currentstatsrow = 0;
+        
+        for (int i = 0; i < rowCount; i++)
         {
-            >= 338 or < 23 => "↑ (N)",      // North
-            >= 23 and < 68 => "↗ (NE)",     // Northeast
-            >= 68 and < 113 => "→ (E)",     // East
-            >= 113 and < 158 => "↘ (SE)",   // Southeast
-            >= 158 and < 203 => "↓ (S)",    // South
-            >= 203 and < 248 => "↙ (SW)",   // Southwest
-            >= 248 and < 293 => "← (W)",    // West
-            >= 293 and < 338 => "↖ (NW)",   // Northwest
+            //if the line is out of bounds, use "nothing"
+            string left = i < lines.Length ? lines[i] : "";
+            string right = "";
+            if (i > 0 && i < stats.Count + 1)
+            {
+                right = stats[currentstatsrow++];
+            }
+            Console.WriteLine(left.PadRight(leftWidth) + right);
+        }
+    }
+    
+    static string GetWindArrow(int windDirectionDegrees)
+    {
+        string[] directions = new []{
+            "↑ (N)",
+            "↗ (NE)",
+            "→ (E)",
+            "↘ (SE)",
+            "↓ (S)",
+            "↙ (SW)",
+            "← (W)",
+            "↖ (NW)"
         };
+        int index = Convert.ToInt32(((float)windDirectionDegrees + 22.5) / 45) % 8;
+        return directions[index];
+    }
+    
+    //Colorize stats based on "severity"
+    static string ColorizeTemperature(double temp)
+    {
+        string color = temp switch
+        {
+            < 0 => "\u001b[0;34m",      // Blue
+            < 18 => "\u001b[0;36m",     // Cyan
+            < 29 => "\u001b[0;32m",     // Green
+            < 35 => "\u001b[0;33m",     // Yellow
+            _ => "\u001b[0;31m"         // Red
+        };
+        return $"{color}{temp}\u001b[0m";
+    }
+    static string ColorizeWindSpeed(double windSpeed)
+    {
+        string color = windSpeed switch
+        {
+            < 10 => "\u001b[0;32m",     // Green
+            < 20 => "\u001b[0;36m",     // Cyan
+            < 45 => "\u001b[0;33m",     // Yellow
+            _ => "\u001b[0;31m"         // Red
+        };
+        return $"{color}{windSpeed}\u001b[0m";
     }
     static void Main(string[] args)
     {
